@@ -1,0 +1,23 @@
+package util
+
+import (
+	"github.com/rs/zerolog/log"
+	"github.com/sony/sonyflake"
+)
+
+var sf *sonyflake.Sonyflake
+
+func init() {
+	sf = sonyflake.NewSonyflake(sonyflake.Settings{})
+}
+
+// GetSeq 取得唯一序列号
+func GetSeq() uint64 {
+	id, err := sf.NextID()
+	if err != nil {
+		log.Error().Err(err).Msg("GetSeq failed")
+		panic(err)
+	}
+
+	return id
+}

@@ -1,0 +1,46 @@
+package config
+
+import (
+	"fmt"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
+)
+
+func init() {
+	// 自动绑定环境变量
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("{{.ProjectAbbr}}")
+
+	// 绑定命令行参数
+	defaultConfig()
+	pflag.Parse()
+	viper.BindPFlags(pflag.CommandLine)
+
+	viper.SetConfigName("conf") // name of config file (without extension)
+	viper.SetConfigType("yaml") // REQUIRED if the config file does not have the extension in the name
+	//viper.AddConfigPath("/etc/appname/")  // path to look for the config file in
+	//viper.AddConfigPath("$HOME/.appname") // call multiple times to add many search paths
+	viper.AddConfigPath(".") // optionally look for config in the working directory
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// 监听配置变更
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config file changed:", e.Name)
+	})
+}
+
+func defaultConfig() {
+	viper.SetDefault("port", {{.Port}})
+}
+
+// Init nothing
+func Init() {
+}

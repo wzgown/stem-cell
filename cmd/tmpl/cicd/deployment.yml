@@ -1,0 +1,79 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    info: "{{.Desc}}"
+  labels:
+    biz_group: {{.ProjectGroup}}
+    prj_name: {{.ProjectName}}
+  name: {{.ProjectName}}
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      biz_group: {{.ProjectGroup}}
+      prj_name: {{.ProjectName}}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        biz_group: {{.ProjectGroup}}
+        prj_name: {{.ProjectName}}
+      name: {{.ProjectName}}
+    spec:
+      containers:
+      - image: harbor.daocloud.cn/amt/{{.ProjectGroup}}/{{.ProjectName}}:dev-39
+        imagePullPolicy: Always
+        name: {{.ProjectName}}
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+          requests:
+            cpu: 500m
+            memory: 500Mi
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/conf.yml
+          subPath: conf.yml
+      imagePullSecrets:
+      - name: harbar-daocloud
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{.ProjectName}}
+            items:
+            - key: conf.yml
+              path: conf.yml
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    info: "{{.Desc}}"
+  labels:
+    biz_group: {{.ProjectGroup}}
+    prj_name: {{.ProjectName}}
+  name: {{.ProjectName}}
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+  - name: {{.ProjectName}}
+    port: {{.Port}}
+    protocol: TCP
+    targetPort: {{.Port}}
+  selector:
+    biz_group: {{.ProjectGroup}}
+    prj_name: {{.ProjectName}}
+  sessionAffinity: None
+...

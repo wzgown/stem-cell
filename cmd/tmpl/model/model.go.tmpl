@@ -1,0 +1,12 @@
+package model
+
+import "database/sql"
+
+// t_sample
+type Sample struct {
+	ID          int            `db:"ID"`
+	MemberID    string         `db:"MEMBER_ID"`
+	Remark      sql.NullString `db:"REMARK"`
+	GMTCreated  string         `db:"GMT_CREATED"`  // mysql中的date_time类型
+	GMTModified string         `db:"GMT_MODIFIED"` // mysql中的date_time类型
+}

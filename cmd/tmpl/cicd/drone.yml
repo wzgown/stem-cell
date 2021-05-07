@@ -1,0 +1,140 @@
+---
+kind: pipeline
+type: docker
+name: {{.ProjectGroup}}/{{.ProjectName}}
+
+trigger:
+  branch:
+    ref:
+    - refs/heads/master
+    - refs/heads/uat
+    - refs/heads/dev
+    - refs/tags/v*
+
+steps:
+- name: build
+  image: golang:1.15
+  commands:
+  - make
+
+# dev环境
+- name: docker-dev
+  image: plugins/docker
+  when:
+    branch:
+    - dev
+  settings:
+    dockerfile: cicd/Dockerfile
+    repo: registry.amtcloud.cn/{{.ProjectGroup}}/{{.ProjectName}}
+    tags: 
+    - dev-${DRONE_BUILD_NUMBER}
+    - dev-latest
+    registry: registry.amtcloud.cn
+    username: 
+      from_secret: user_registry_amtcloud
+    password:
+      from_secret: psw_registry_amtcloud
+    build_args:
+    - TARGET=dev
+
+# dev环境部署
+- name: deploy-dev
+  image: nobugtodebug/kustomit:latest
+  when:
+    branch:
+    - dev
+  commands:
+  - cd /app && python main.py
+  settings:
+    git_user:
+      from_secret: drone_gitea
+    git_password:
+      from_secret: psw_drone_gitea
+    project_path: ${DRONE_REPO}
+    target_env: dev
+    image_name: registry.amtcloud.cn/{{.ProjectGroup}}/{{.ProjectName}}
+    image_tag: dev-${DRONE_BUILD_NUMBER}
+    ref_commit: ${DRONE_COMMIT}
+    ref_author: ${DRONE_COMMIT_AUTHOR}
+
+
+# 测试环境
+- name: docker-test
+  image: plugins/docker
+  when:
+    branch:
+    - uat
+  settings:
+    dockerfile: cicd/Dockerfile
+    repo: registry.amtcloud.cn/{{.ProjectGroup}}/{{.ProjectName}}
+    tags: 
+    - test-${DRONE_BUILD_NUMBER}
+    - test-latest
+    registry: registry.amtcloud.cn
+    username: 
+      from_secret: user_registry_amtcloud
+    password:
+      from_secret: psw_registry_amtcloud
+    build_args:
+    - TARGET=test
+
+# 测试环境部署
+- name: deploy-uat
+  image: nobugtodebug/kustomit:latest
+  when:
+    branch:
+    - uat
+  commands:
+  - cd /app && python main.py
+  settings:
+    git_user:
+      from_secret: drone_gitea
+    git_password:
+      from_secret: psw_drone_gitea
+    project_path: ${DRONE_REPO}
+    target_env: test
+    image_name: registry.amtcloud.cn/{{.ProjectGroup}}/{{.ProjectName}}
+    image_tag: test-${DRONE_BUILD_NUMBER}
+    ref_commit: ${DRONE_COMMIT}
+    ref_author: ${DRONE_COMMIT_AUTHOR}
+
+# 生产环境
+- name: docker-prod
+  image: plugins/docker
+  when:
+    ref:
+      - refs/heads/master
+      - refs/tags/*
+  settings:
+    dockerfile: cicd/Dockerfile
+    repo: registry.amtcloud.cn/{{.ProjectGroup}}/{{.ProjectName}}
+    auto_tag: true
+    tags: 
+    - prod-${DRONE_BUILD_NUMBER}
+    registry: registry.amtcloud.cn
+    username: 
+      from_secret: user_registry_amtcloud
+    password:
+      from_secret: psw_registry_amtcloud
+    build_args:
+    - TARGET=prod
+# 生产环境部署
+- name: deploy-prod
+  image: nobugtodebug/kustomit:latest
+  when:
+    ref:
+      - refs/tags/*
+  commands:
+    - cd /app && python main.py
+  settings:
+    git_user:
+      from_secret: drone_gitea
+    git_password:
+      from_secret: psw_drone_gitea
+    project_path: ${DRONE_REPO}
+    target_env: prod
+    image_name: registry.amtcloud.cn/{{.ProjectGroup}}/{{.ProjectName}}
+    image_tag: ${DRONE_TAG}
+    ref_commit: ${DRONE_COMMIT}
+    ref_author: ${DRONE_COMMIT_AUTHOR}
+...

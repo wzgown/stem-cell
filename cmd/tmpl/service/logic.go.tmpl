@@ -1,0 +1,15 @@
+package service
+
+import (
+	"github.com/rs/zerolog/log"
+)
+
+// 这里写业务逻辑
+// endpoint接收到的请求，只处理rpc细节，实际的逻辑都调用这里的代码
+
+// Ping 导入鸣蛙那边的平安银行开户会员信息
+func Ping() (string, error) {
+	log.Info().Msg("handle ping")
+
+	return "pong", nil
+}

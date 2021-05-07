@@ -1,0 +1,32 @@
+package main
+
+import (
+	"os"
+	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
+
+	"{{.Org}}/{{.ProjectGroup}}/{{.ProjectName}}/config"
+	"{{.Org}}/{{.ProjectGroup}}/{{.ProjectName}}/endpoint"
+)
+
+func initLog() {
+	// 将时间字段设置为unix时间戳
+	//zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	// 支持打印err的stack
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+	// TODO 根据配置设置日志输出格式及流向
+	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+	log.Logger = log.Output(output)
+	log.Logger = log.With().Caller().Stack().Logger()
+}
+
+func main() {
+	config.Init()
+	initLog()
+
+	log.Info().Msg("{{.ProjectGroup}}/{{.ProjectName}} server starting")
+	endpoint.StartHTTPSvr()
+}

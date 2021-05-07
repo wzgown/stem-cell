@@ -1,0 +1,88 @@
+package model
+
+import (
+	"fmt"
+	"sync"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
+)
+
+var (
+	onlyOnce  sync.Once
+	mysql     *sqlx.DB
+	frogOnce  sync.Once
+	frogMysql *sqlx.DB
+)
+
+func getMysql() *sqlx.DB {
+	onlyOnce.Do(func() {
+		host := viper.GetString("mysql.host")
+		port := viper.GetInt("mysql.port")
+		user := viper.GetString("mysql.user")
+		passwd := viper.GetString("mysql.passwd")
+		mysqlDSN := fmt.Sprintf("%s:%s@(%s:%d)/cherry", user, passwd, host, port)
+		mysql = sqlx.MustOpen("mysql", mysqlDSN)
+	})
+
+	return mysql
+}
+
+func makeSureTX(tx *sqlx.Tx, ptrERR *error) {
+	if _p := recover(); _p != nil {
+		log.Error().Stack().Err(*ptrERR).Msgf("transaction failed. because: %v", _p)
+		if err := tx.Rollback(); err != nil {
+			log.Error().Err(err).Msg("rollback transaction")
+		}
+		panic(_p)
+	}
+
+	if *ptrERR != nil {
+		log.Error().Stack().Err(*ptrERR).Msg("rollback transaction")
+		if err := tx.Rollback(); err != nil {
+			log.Error().Err(err).Msg("rollback transaction")
+		}
+	} else {
+		if err := tx.Commit(); err != nil {
+			log.Error().Stack().Err(err).Msg("commit transaction")
+		}
+	}
+}
+
+func UpdateSample(nr *Sample) error {
+	tx, err := getMysql().Beginx()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer makeSureTX(tx, &err)
+
+	var prevInfo struct {
+		Account     string `db:"accountid"`
+		Balance     string `db:"balance"`
+		SmemberID   string `db:"memberid"`
+		SmemberName string `db:"membername"`
+	}
+	log.Info().Msg("demo how to select from mysql")
+	var object string
+	sqlstring := `select ID,MemberID,Remark 
+		from t_sample
+		limit 1 order by GMTModified`
+	err = tx.Get(&object, sqlstring)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	log.Info().Str("memberid", object.MemberID).Str("remark", object.Remark.String).Msg("member info")
+	sqlstring = `update t_sample 
+		set REMARK=?  
+		where MEMBER_ID=?`
+	_, err = tx.Exec(sqlstring, nr.Remark, nr.MemberID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}

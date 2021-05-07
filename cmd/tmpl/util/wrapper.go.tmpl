@@ -1,0 +1,16 @@
+package util
+
+import (
+	"strconv"
+	"time"
+)
+
+func Atoi(s string) int {
+	n, _ := strconv.Atoi(s)
+	return n
+}
+
+func Timestamp2DateStr(ts int64) string {
+	t := time.Unix(int64(ts), 0)
+	return t.Format("20060102")
+}

@@ -1,0 +1,8 @@
+http:
+  port: {{.Port}}
+  context_path: /{{.ProjectName}}
+mysql:
+  host: 192.168.30.17
+  port: 3306
+  user: yq
+  passwd: yqyqGreat!

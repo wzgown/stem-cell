@@ -1,0 +1,42 @@
+package endpoint
+
+import (
+	"fmt"
+
+	"{{.Org}}/{{.ProjectGroup}}/{{.ProjectName}}/service"
+
+	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
+)
+
+// StartHTTPSvr 启动http服务器
+func StartHTTPSvr() {
+
+	// Hello world, the web server
+	port := viper.GetInt("http.port")
+	contextPath := viper.GetString("http.context_path")
+
+	r := gin.Default()
+	r.GET(contextPath+"/ping", ping)
+
+	// TODO 在这里增加http路由,可参照上面的/ping
+
+	log.Info().Msgf("http on port: %d", port)
+	r.Run(fmt.Sprintf(":%d", port))
+}
+
+func ping(c *gin.Context) {
+	msg, err := service.Ping()
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+	}
+
+	c.JSON(200, gin.H{
+		"message": msg,
+	})
+
+	return
+}

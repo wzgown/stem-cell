@@ -1,0 +1,28 @@
+package proto
+
+// 因为还没有使用gRPC
+// 这里定义暴露的API的请求和响应结构
+
+// Empty 空返回
+type Empty struct {
+}
+
+// PayReq 支付请求
+// Amount = PayAmount + CreditAmount
+type PayReq struct {
+	TradeOrderNo string `json:"TradeOrderNo"` // 交易订单号
+	RequestNo    string `json:"RequestNo"`    // 请求标识
+	PayerID      string `json:"PayerID"`      // 付款方ID, 即买家
+	PayeeID      string `json:"PayeeID"`      // 收款方ID, 即卖家
+	Amount       string `json:"Amount"`       // 订单金额, 1.99
+	PayAmount    string `json:"PayAmount"`    // 支付金额, 1.99
+	CreditAmount string `json:"CreditAmount"` // 订单授信金额, 1.99
+	Remark       string `json:"Remark"`       // 备注
+	OperatorID   string `json:"OperatorID"`   // 操作员ID
+	Extension    string `json:"Extension"`    // 扩展信息
+}
+
+// PayRsp 支付响应
+type PayRsp struct {
+	PayOrderNo []string `json:"PayOrderNo"` // 支付单号
+}
