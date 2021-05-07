@@ -62,11 +62,11 @@ stem-cell new [项目名] [项目存放路径]
 
 func init() {
 	createCmd.Flags().StringVarP(&arg.Org, "organization", "o", "amtcloud.cn", "公司名")
-	createCmd.Flags().StringVarP(&arg.ProjectGroup, "group", "g", "", "业务分组")
+	createCmd.Flags().StringVarP(&arg.ProjectGroup, "group", "g", "tokamak", "业务分组")
 	createCmd.Flags().StringVarP(&arg.ProjectName, "name", "n", "", "服务名")
 	createCmd.Flags().StringVarP(&arg.Desc, "desc", "d", "to be or not to be", "服务简介")
 	createCmd.Flags().IntVarP(&arg.Port, "port", "p", 0, "服务端口号")
-	createCmd.Flags().BoolVarP(&silent, "silent", "s", false, "gen code silently")
+	createCmd.Flags().BoolVarP(&silent, "silent", "s", false, "使用默认参数创建项目")
 
 	RootCmd.AddCommand(createCmd)
 

@@ -21,15 +21,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Version 鲁班的版本
+// Version 版本
 var Version string
 
-// GitDegest 鲁班的git sha
+// GitDegest git sha
 var GitDegest string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "stem-cell",
+	Use:   "stem-cell" + " v" + Version + "; git commit: " + GitDegest,
 	Short: "a tool for create a new project",
 	Long:  `干细胞：一个创建新工程的工具`,
 	// Uncomment the following line if your bare application
