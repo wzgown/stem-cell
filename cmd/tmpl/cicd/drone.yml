@@ -29,6 +29,9 @@ steps:
     tags: 
     - dev-${DRONE_BUILD_NUMBER}
     - dev-latest
+    custom_labels:
+      git-commit: ${DRONE_COMMIT_SHA}
+      author: ${DRONE_COMMIT_AUTHOR}
     registry: registry.amtcloud.cn
     username: 
       from_secret: user_registry_amtcloud
@@ -70,6 +73,9 @@ steps:
     tags: 
     - test-${DRONE_BUILD_NUMBER}
     - test-latest
+    custom_labels:
+      git-commit: ${DRONE_COMMIT_SHA}
+      author: ${DRONE_COMMIT_AUTHOR}
     registry: registry.amtcloud.cn
     username: 
       from_secret: user_registry_amtcloud
@@ -111,6 +117,9 @@ steps:
     auto_tag: true
     tags: 
     - prod-${DRONE_BUILD_NUMBER}
+    custom_labels:
+      git-commit: ${DRONE_COMMIT_SHA}
+      author: ${DRONE_COMMIT_AUTHOR}
     registry: registry.amtcloud.cn
     username: 
       from_secret: user_registry_amtcloud
