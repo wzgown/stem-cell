@@ -5,5 +5,5 @@ export CGO_ENABLED=0
 
 all:
 	go mod tidy
-	go build --tags netgo --tags jsoniter
+	env CGO_ENABLED=0 go build --tags netgo --tags jsoniter
 	go test --tags netgo --tags jsoniter
