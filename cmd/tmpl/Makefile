@@ -1,5 +1,5 @@
 export GOPROXY=https://goproxy.io,direct 
-export GOPRIVATE=amtcloud.cn
+export GOPRIVATE=amtlink.cn
 export GOSUMDB=off
 export CGO_ENABLED=0 
 

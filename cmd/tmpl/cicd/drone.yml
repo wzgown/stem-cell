@@ -100,7 +100,7 @@ steps:
     project_path: ${DRONE_REPO}
     target_env: test
     image_name: registry.amtcloud.cn/{{.ProjectGroup}}/{{.ProjectName}}
-    image_tag: test-${DRONE_BUILD_NUMBER}
+    image_tag: uat-${DRONE_BUILD_NUMBER}
     ref_commit: ${DRONE_COMMIT}
     ref_author: ${DRONE_COMMIT_AUTHOR}
 
