@@ -71,8 +71,8 @@ steps:
     dockerfile: cicd/Dockerfile
     repo: registry.amtcloud.cn/{{.ProjectGroup}}/{{.ProjectName}}
     tags: 
-    - test-${DRONE_BUILD_NUMBER}
-    - test-latest
+    - uat-${DRONE_BUILD_NUMBER}
+    - uat-latest
     custom_labels:
       git-commit: ${DRONE_COMMIT_SHA}
       author: ${DRONE_COMMIT_AUTHOR}

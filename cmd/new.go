@@ -61,7 +61,7 @@ stem-cell new [项目名] [项目存放路径]
 )
 
 func init() {
-	createCmd.Flags().StringVarP(&arg.Org, "organization", "o", "gitea.amtcloud.cn", "公司名")
+	createCmd.Flags().StringVarP(&arg.Org, "organization", "o", "gitea.amtlink.cn", "公司名")
 	createCmd.Flags().StringVarP(&arg.ProjectGroup, "group", "g", "tokamak", "业务分组")
 	createCmd.Flags().StringVarP(&arg.ProjectName, "name", "n", "", "服务名")
 	createCmd.Flags().StringVarP(&arg.Desc, "desc", "d", "to be or not to be", "服务简介")
