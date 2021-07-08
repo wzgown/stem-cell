@@ -46,7 +46,7 @@ stem-cell new [项目名] [项目存放路径]
 
 # 随机生成[40000,50000]之间的服务监听端口，如与现有服务冲突请自行修改。`,
 		Run:  createTakumi,
-		Args: cobra.MinimumNArgs(2),
+		Args: cobra.MinimumNArgs(1),
 	}
 
 	arg              = meta.Params{}
@@ -65,6 +65,7 @@ func init() {
 	createCmd.Flags().StringVarP(&arg.ProjectGroup, "group", "g", "tokamak", "业务分组")
 	createCmd.Flags().StringVarP(&arg.ProjectName, "name", "n", "", "服务名")
 	createCmd.Flags().StringVarP(&arg.Desc, "desc", "d", "to be or not to be", "服务简介")
+	createCmd.Flags().StringVarP(&arg.PlacedPath, "place", "l", "./", "服务存放在路径")
 	createCmd.Flags().IntVarP(&arg.Port, "port", "p", 0, "服务端口号")
 	createCmd.Flags().BoolVarP(&silent, "silent", "s", false, "使用默认参数创建项目")
 
@@ -77,7 +78,7 @@ func init() {
 
 func createTakumi(cmd *cobra.Command, args []string) {
 	arg.ProjectName = args[0]
-	placedPath = args[1]
+	placedPath = arg.PlacedPath
 	if !silent {
 		readArgFromConsole()
 	}
@@ -159,6 +160,7 @@ func readArgFromConsole() {
 	arg.Org = scan("公司名称", arg.Org, func(t string) bool { return groupPattern.MatchString(t) })
 	arg.ProjectGroup = scan("业务分组名称", arg.ProjectGroup, func(t string) bool { return groupPattern.MatchString(t) })
 	arg.ProjectName = scan("项目名", arg.ProjectName, func(t string) bool { return groupPattern.MatchString(t) })
+	arg.PlacedPath = scan("存放路径", arg.PlacedPath, func(t string) bool { return groupPattern.MatchString(t) })
 	arg.Desc = scan("简介", arg.Desc, func(t string) bool { return t != "" })
 	tPort := scan("端口", strconv.Itoa(randomListenPort), func(t string) bool { _, b := util.CheckInt(t); return b })
 	var err error

@@ -7,5 +7,6 @@ type Params struct {
 	CamelProjectName string
 	ProjectAbbr      string // 项目名缩写
 	Desc             string
+	PlacedPath       string
 	Port             int
 }
