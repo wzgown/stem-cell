@@ -42,7 +42,9 @@ var (
 		Short: "在当前目录下创建一个基于takumi的空项目",
 		Long: `For example:
 
-stem-cell new [项目名] [项目存放路径]
+stem-cell new [项目名] [-flags]
+
+for example:  stem-cell new ProjName1 -s
 
 # 随机生成[40000,50000]之间的服务监听端口，如与现有服务冲突请自行修改。`,
 		Run:  createTakumi,
@@ -63,7 +65,6 @@ stem-cell new [项目名] [项目存放路径]
 func init() {
 	createCmd.Flags().StringVarP(&arg.Org, "organization", "o", "gitea.amtlink.cn", "公司名")
 	createCmd.Flags().StringVarP(&arg.ProjectGroup, "group", "g", "tokamak", "业务分组")
-	createCmd.Flags().StringVarP(&arg.ProjectName, "name", "n", "", "服务名")
 	createCmd.Flags().StringVarP(&arg.Desc, "desc", "d", "to be or not to be", "服务简介")
 	createCmd.Flags().StringVarP(&arg.PlacedPath, "place", "l", "./", "服务存放在路径")
 	createCmd.Flags().IntVarP(&arg.Port, "port", "p", 0, "服务端口号")
